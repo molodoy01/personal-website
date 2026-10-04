@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#030303">
+  <meta name="description" content="Личный сайт Владислава Вейна о людях, идеях и проектах. Здесь — его разработки, интересы и размышления об общении и новых возможностях.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://mm.molodoy98.workers.dev/">
+  <title>Владислав Вейн — люди, идеи и проекты</title>
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mm.molodoy98.workers.dev/">
+  <meta property="og:title" content="Владислав Вейн — люди, идеи и проекты">
+  <meta property="og:description" content="Личный сайт Владислава Вейна о людях, идеях и проектах. Здесь — его разработки, интересы и размышления об общении и новых возможностях.">
+  <meta property="og:image" content="https://mm.molodoy98.workers.dev/assets/photos/hero-photo.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Владислав Вейн — люди, идеи и проекты">
+  <meta name="twitter:description" content="Личный сайт Владислава Вейна о людях, идеях и проектах. Здесь — его разработки, интересы и размышления об общении и новых возможностях.">
+  <meta name="twitter:image" content="https://mm.molodoy98.workers.dev/assets/photos/hero-photo.webp">
+  <script>
+    (() => {
+      const scrollKey = `scrollY:${location.pathname}${location.search}`;
+      const navigationEntry = performance.getEntriesByType('navigation')[0];
+      const savedScroll = sessionStorage.getItem(scrollKey);
+
+      const saveScroll = () => {
+        if (document.documentElement.classList.contains('is-restoring-scroll')) return;
+        sessionStorage.setItem(scrollKey, String(window.scrollY));
+      };
+      window.addEventListener('scroll', saveScroll, { passive: true });
+      window.addEventListener('pagehide', saveScroll);
+
+      if (navigationEntry?.type !== 'reload' || savedScroll === null) return;
+
+      history.scrollRestoration = 'manual';
+      const hash = location.hash;
+      document.documentElement.classList.add('is-restoring-scroll');
+      document.documentElement.style.backgroundColor = '#030303';
+      document.documentElement.style.visibility = 'hidden';
+      history.replaceState(null, '', `${location.pathname}${location.search}`);
+      window.addEventListener('DOMContentLoaded', () => {
+        const pageLoaded = document.readyState === 'complete'
+          ? Promise.resolve()
+          : new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+
+        Promise.all([pageLoaded, document.fonts.ready]).then(() => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const targetScroll = Number(savedScroll);
+              window.scrollTo({ top: targetScroll, behavior: 'instant' });
+              requestAnimationFrame(() => {
+                if (Math.abs(window.scrollY - targetScroll) > 1) {
+                  window.scrollTo({ top: targetScroll, behavior: 'instant' });
+                }
+                if (hash) {
+                  history.replaceState(null, '', `${location.pathname}${location.search}${hash}`);
+                }
+                document.documentElement.classList.remove('is-restoring-scroll');
+                document.documentElement.style.visibility = '';
+                document.documentElement.style.backgroundColor = '';
+              });
+            });
+          });
+        });
+      }, { once: true });
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+
+    <header class="topbar">
+      <a class="mark" href="#cover">В. Вейн</a>
+      <nav class="topnav" aria-label="Основная навигация">
+        <a href="#work">Проект</a>
+        <a href="#people">Люди</a>
+        <a href="#studio">Студия</a>
+        <a href="#hello">Связь</a>
+      </nav>
+    </header>
+
+    <main>
+    <!-- COVER -->
+    <section class="cover" id="cover">
+      <div class="cover-text">
+        <p class="cover-meta">Finland · Remote · <time data-current-year datetime="2026">2026</time></p>
+        <h1>
+          <span class="line">Давай</span>
+          <span class="line italic">посмотрим</span>
+        </h1>
+        <p class="cover-sub">
+          <span class="cover-sub-intro">Делаю то, что мне интересно,<br class="cover-sub-intro-break"> и делюсь тем, что<br class="cover-sub-intro-narrow-break"> может пригодиться.</span>
+          <span class="cover-sub-accent">Люблю идеи, из которых неожиданно<br class="cover-sub-break"> вырастают хорошие разговоры.</span>
+        </p>
+        <div class="cover-actions">
+          <a class="cover-go" href="#work">Начать <span class="cover-go-arrow" aria-hidden="true">↓</span></a>
+          <a class="cover-contact" href="#hello">Связаться</a>
+        </div>
+      </div>
+      <div class="cover-media">
+        <img src="assets/photos/hero-photo.webp" alt="Владислав Вейн" width="959" height="1639" fetchpriority="high" decoding="async">
+        <span class="cover-tag">01</span>
+      </div>
+    </section>
+
+    <!-- NOW -->
+    <section class="chapter" id="now">
+      <div class="chapter-rail">
+        <span class="chapter-no">02</span>
+        <span class="chapter-label">сейчас</span>
+      </div>
+      <div class="chapter-body">
+        <h2>Что сейчас?</h2>
+        <div class="text-stack">
+          <p class="deck">Продолжаю собирать инструмент, который должен упростить планирование и создание постов в Телеграм.</p>
+          <p>Параллельно обновляю личный планировщик напоминаний XMSGi.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section class="work" id="work">
+      <div class="work-head">
+        <div>
+          <p class="eyebrow">03 · результат</p>
+          <h2>XMSGi</h2>
+        </div>
+        <a class="product-link" href="https://xmsgi.molodoy98.workers.dev/" target="_blank" rel="noopener noreferrer">
+          Открыть
+          <span class="product-link-arrow" aria-hidden="true"><span class="product-link-arrow-glyph">↓</span></span>
+        </a>
+      </div>
+
+      <p class="work-lead">Отложенные сообщения в Телеграм.<br>Пишешь — выбираешь время — забываешь.</p>
+
+      <div class="work-stage" id="work-stage">
+        <figure class="screen screen-light">
+          <img src="assets/progress/01-glass.webp" alt="XMSGi — светлая тема" width="1722" height="913" loading="lazy" decoding="async">
+          <figcaption>Светлая</figcaption>
+        </figure>
+        <figure class="screen screen-dark">
+          <img src="assets/progress/02.webp" alt="XMSGi — тёмная тема" width="1902" height="1016" loading="lazy" decoding="async">
+          <figcaption>Тёмная</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- PEOPLE -->
+    <section class="people" id="people">
+      <div class="people-intro">
+        <p class="eyebrow">04 · люди</p>
+        <h2>Живое<br>общение</h2>
+      </div>
+
+      <figure class="still still-a">
+        <img src="assets/people/01-cafe.webp" alt="Кафе в городе" width="1306" height="1205" loading="lazy" decoding="async">
+      </figure>
+
+      <div class="people-mid">
+        <p class="deck">Общие интересы — хорошее начало.</p>
+        <p>Здесь можно делиться тем, что увлекает, обсуждать идеи и смотреть на привычное под новым углом.</p>
+        <p class="muted">Не обязательно совпадать во всём: разные взгляды часто делают разговор интереснее.</p>
+      </div>
+
+      <figure class="still still-b">
+        <img src="assets/people/02-window.webp" alt="Два мужчины за стеклом" width="1284" height="1189" loading="lazy" decoding="async">
+      </figure>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery" id="gallery" aria-label="Ещё фото">
+      <div class="gallery-head">
+        <p class="eyebrow">05 · ещё</p>
+        <h2>Фото<br>из жизни</h2>
+      </div>
+      <div class="gallery-grid">
+        <figure class="gallery-item item-tall">
+          <img src="assets/gallery/FHR%204325.webp" alt="Человек на заборе" width="1024" height="1024" loading="lazy" decoding="async">
+        </figure>
+        <figure class="gallery-item item-wide">
+          <img src="assets/gallery/wee%204232.webp" alt="Человек на пирсе среди яхт на закате" width="1441" height="1092" loading="lazy" decoding="async">
+        </figure>
+        <figure class="gallery-item gallery-item-window">
+          <img src="assets/gallery/Fhj%203345.webp" alt="Окно старого дома в зелени" width="1121" height="1145" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <!-- STUDIO -->
+    <section class="studio" id="studio">
+      <div class="studio-inner">
+        <div class="studio-copy">
+          <p class="eyebrow">06 · в работе</p>
+          <h2>Студия<br>публикаций</h2>
+          <p class="deck">Собираю полноценный редактор для публикаций с шаблонами, медиа, планированием и предпросмотром.</p>
+          <p>Для небольших каналов и для тех, кому важен фокус на скорости и удобстве.</p>
+        </div>
+        <figure class="studio-shot">
+          <img src="assets/ideas/01.webp" alt="Редактор постов для Telegram" width="1912" height="1012" loading="lazy" decoding="async">
+        </figure>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+      <div class="about-copy">
+        <p class="eyebrow"><span class="about-index">07</span><span class="about-separator">·</span><span>о себе</span></p>
+        <blockquote>
+          Легко увлекаюсь новыми идеями и люблю смотреть, что из них получится. В общении ценю спокойствие и прямоту.
+        </blockquote>
+        <p class="about-extra">
+          <span class="about-extra-lead">Хотел стать легендой.</span>
+          <span class="about-extra-rest">Пока стал местной проблемой.</span>
+        </p>
+        <p class="about-extra">
+          <span class="about-extra-lead">Боишься кого-то упустить?</span>
+          <span class="about-extra-rest">Упусти — и не бойся.</span>
+        </p>
+      </div>
+
+      <figure class="about-media" aria-label="Красный образ">
+        <img src="assets/about/portrait-red-transparent-clean-3.png" alt="Красный образ" width="1254" height="1254" loading="lazy" decoding="async">
+      </figure>
+    </section>
+
+    <!-- HELLO -->
+    <section class="hello" id="hello">
+      <div class="hello-layout">
+        <div class="hello-intro">
+          <p class="eyebrow">08 · связь</p>
+          <p class="hello-place"><span class="dot"></span> Finland / Remote</p>
+          <h2>Напиши</h2>
+          <p class="hello-note">Открыт для простого общения, знакомств, идей и предложений.</p>
+        </div>
+        <div class="hello-contact">
+          <a class="hello-mail" href="mailto:myplanx@proton.me">myplanx<em>@</em>proton.me</a>
+          <button type="button" class="copy" data-mail="myplanx@proton.me" aria-live="polite" aria-atomic="true">
+            <span data-idle>копировать</span>
+            <span data-done hidden>скопировано</span>
+          </button>
+        </div>
+      </div>
+    </section>
+    </main>
+
+    <footer class="foot">
+      <span>© Владислав Вейн</span>
+      <span>Люди и возможности</span>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const year = document.querySelector('[data-current-year]');
+      const currentYear = new Date().getFullYear();
+      if (year) {
+        year.dateTime = String(currentYear);
+        year.textContent = currentYear;
+      }
+
+      const navigationLinks = [...document.querySelectorAll('.mark[href^="#"], .topnav a[href^="#"]')];
+      if ('IntersectionObserver' in window && navigationLinks.length) {
+        const observedSections = new Map();
+        const observer = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            observedSections.set(entry.target.id, entry.isIntersecting);
+          }
+
+          const activeSection = [...observedSections]
+            .filter(([, isIntersecting]) => isIntersecting)
+            .map(([id]) => document.getElementById(id))
+            .filter(Boolean)
+            .sort((a, b) => {
+              const headerBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
+              return Math.abs(a.getBoundingClientRect().top - headerBottom)
+                - Math.abs(b.getBoundingClientRect().top - headerBottom);
+            })[0];
+
+          for (const link of navigationLinks) {
+            const isActive = link.hash === `#${activeSection?.id}`;
+            link.classList.toggle('is-active', isActive);
+            if (isActive) {
+              link.setAttribute('aria-current', 'location');
+            } else {
+              link.removeAttribute('aria-current');
+            }
+          }
+        }, { rootMargin: '-76px 0px -55% 0px' });
+
+        for (const link of navigationLinks) {
+          const section = document.querySelector(link.hash);
+          if (section) observer.observe(section);
+        }
+      }
+
+      const projectLink = document.querySelector('.topnav a[href="#work"]');
+      const projectSection = document.querySelector('#work');
+      projectLink?.addEventListener('click', event => {
+        event.preventDefault();
+        if (window.location.hash !== '#work') {
+          window.history.pushState(null, '', '#work');
+        }
+
+        const headerBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
+        const extraScroll = window.matchMedia('(min-width: 901px)').matches ? 40 : 0;
+        const top = projectSection.getBoundingClientRect().top + window.scrollY - headerBottom - 16 + extraScroll;
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+        window.scrollTo({ top, behavior });
+      });
+
+      const startLink = document.querySelector('.cover-go');
+      startLink?.addEventListener('click', event => {
+        event.preventDefault();
+        if (window.location.hash !== '#work') {
+          window.history.pushState(null, '', '#work');
+        }
+
+        const reservedSpace = 18 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const top = projectSection.getBoundingClientRect().top + window.scrollY - Math.max(0, window.innerHeight - reservedSpace);
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+        window.scrollTo({ top, behavior });
+      });
+
+      const aboutSection = document.querySelector('#about');
+      if (aboutSection && 'IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        aboutSection.classList.add('is-reveal-ready');
+        const observer = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) return;
+          aboutSection.classList.add('is-revealed');
+          observer.disconnect();
+        }, { threshold: 0.15 });
+        observer.observe(aboutSection);
+      }
+
+      const btn = document.querySelector('.copy');
+      if (!btn) return;
+      const idle = btn.querySelector('[data-idle]');
+      const done = btn.querySelector('[data-done]');
+      const mail = btn.dataset.mail || '';
+      let timer;
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(mail);
+          idle.hidden = true;
+          done.hidden = false;
+          btn.classList.add('on');
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            idle.hidden = false;
+            done.hidden = true;
+            btn.classList.remove('on');
+          }, 1600);
+        } catch (_) {}
+      });
+    })();
+  </script>
+</body>
+</html>
