@@ -184,7 +184,7 @@
       </div>
       <div class="gallery-grid">
         <figure class="gallery-item item-tall">
-          <img src="assets/gallery/FHR%204325.webp" alt="Человек на заборе" width="1024" height="1024" loading="lazy" decoding="async">
+          <img src="assets/gallery/edited_photo_web.webp" alt="Мужчина в кресле в рабочем пространстве" width="1024" height="1024" loading="lazy" decoding="async" style="object-position: 50% 50%; transform: none;">
         </figure>
         <figure class="gallery-item item-wide">
           <img src="assets/gallery/wee%204232.webp" alt="Человек на пирсе среди яхт на закате" width="1441" height="1092" loading="lazy" decoding="async">
@@ -325,7 +325,8 @@
         }
 
         const reservedSpace = 18 * parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const top = projectSection.getBoundingClientRect().top + window.scrollY - Math.max(0, window.innerHeight - reservedSpace);
+        const mobileOffset = window.matchMedia('(max-width: 900px)').matches ? 24 : 0;
+        const top = projectSection.getBoundingClientRect().top + window.scrollY - Math.max(0, window.innerHeight - reservedSpace) - mobileOffset;
         const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
         window.scrollTo({ top, behavior });
       });

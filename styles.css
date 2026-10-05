@@ -640,8 +640,10 @@ p, blockquote { text-wrap: pretty; }
   .item-wide img {
     object-position: center 65%;
   }
-  .item-tall img {
-    object-position: 60% 62%;
+  .gallery-grid > .gallery-item.item-tall img {
+    object-position: 18% 62%;
+    transform: scale(1.16) translateX(-12%);
+    transform-origin: center bottom;
   }
 }
 @media (max-width: 560px) {
@@ -671,9 +673,9 @@ p, blockquote { text-wrap: pretty; }
   .item-tall img {
     object-position: center 55%;
   }
-  .item-tall img {
-    object-position: center 100%;
-    transform: scale(1.15);
+  .gallery-grid > .gallery-item.item-tall img {
+    object-position: 18% 100%;
+    transform: scale(1.22) translateX(-12%);
     transform-origin: center bottom;
   }
 }
@@ -866,7 +868,7 @@ p, blockquote { text-wrap: pretty; }
   }
   .about-media img {
     object-position: center;
-    transform: translate(-29%, -15px);
+    transform: translate(-29%, -15px) scale(0.92);
   }
   .about-extra {
     margin-top: 1.25rem;
