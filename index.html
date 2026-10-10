@@ -334,7 +334,7 @@
 
         const reservedSpace = 18 * parseFloat(getComputedStyle(document.documentElement).fontSize);
         const mobileOffset = window.matchMedia('(max-width: 900px)').matches ? 24 : 0;
-        const top = projectSection.getBoundingClientRect().top + window.scrollY - Math.max(0, window.innerHeight - reservedSpace) - mobileOffset;
+        const top = projectSection.getBoundingClientRect().top + window.scrollY - Math.max(0, window.innerHeight - reservedSpace) - mobileOffset - 10;
         const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
         window.scrollTo({ top, behavior });
       });
