@@ -142,7 +142,7 @@
 
       <p class="work-lead">Отложенные сообщения в Телеграм.<br>Пишешь — выбираешь время — забываешь.</p>
 
-      <div class="work-stage" id="work-stage">
+      <div class="work-stage" id="work-stage" role="button" tabindex="0" aria-label="Поменять местами светлый и тёмный скриншоты XMSGi" aria-pressed="false">
         <figure class="screen screen-light">
           <img src="assets/progress/01-glass.webp" alt="XMSGi — светлая тема" width="1722" height="913" loading="lazy" decoding="async">
           <figcaption>Светлая</figcaption>
@@ -169,6 +169,7 @@
         <p class="deck">Общие интересы — хорошее начало.</p>
         <p>Здесь можно делиться тем, что увлекает, обсуждать идеи и смотреть на привычное под новым углом.</p>
         <p class="muted">Не обязательно совпадать во всём: разные взгляды часто делают разговор интереснее.</p>
+        <p class="muted">Есть идеи? предлагай, обсудим и возможно реализуем.</p>
       </div>
 
       <figure class="still still-b">
@@ -204,9 +205,16 @@
           <p class="deck">Собираю полноценный редактор для публикаций с шаблонами, медиа, планированием и предпросмотром.</p>
           <p>Для небольших каналов и для тех, кому важен фокус на скорости и удобстве.</p>
         </div>
-        <figure class="studio-shot">
-          <img src="assets/ideas/01.webp" alt="Редактор постов для Telegram" width="1912" height="1012" loading="lazy" decoding="async">
-        </figure>
+        <div class="studio-visual" aria-label="Скриншоты XMSGi Studio">
+          <figure class="studio-shot studio-shot-login">
+            <img src="assets/studio/login.webp" alt="XMSGi Studio — экран входа" width="1466" height="638" loading="lazy" decoding="async">
+            <figcaption>Вход · Studio</figcaption>
+          </figure>
+          <figure class="studio-shot studio-shot-planner">
+            <img src="assets/studio/planner.webp" alt="XMSGi Studio — планировщик поста с живым предпросмотром" width="1600" height="838" loading="lazy" decoding="async">
+            <figcaption>Планировщик</figcaption>
+          </figure>
+        </div>
       </div>
     </section>
 
@@ -311,8 +319,8 @@
         }
 
         const headerBottom = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
-        const extraScroll = window.matchMedia('(min-width: 901px)').matches ? 40 : 0;
-        const top = projectSection.getBoundingClientRect().top + window.scrollY - headerBottom - 16 + extraScroll;
+        const sectionOffset = window.matchMedia('(min-width: 901px)').matches ? 96 : headerBottom + 16;
+        const top = projectSection.getBoundingClientRect().top + window.scrollY - sectionOffset;
         const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
         window.scrollTo({ top, behavior });
       });
@@ -340,6 +348,40 @@
           observer.disconnect();
         }, { threshold: 0.15 });
         observer.observe(aboutSection);
+      }
+
+      const studioVisual = document.querySelector('.studio-visual');
+      if (studioVisual) {
+        const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (canHover && !reducedMotion) {
+          studioVisual.addEventListener('mouseenter', () => studioVisual.classList.add('is-swapped'));
+          studioVisual.addEventListener('mouseleave', () => studioVisual.classList.remove('is-swapped'));
+        } else {
+          studioVisual.addEventListener('click', () => studioVisual.classList.toggle('is-swapped'));
+        }
+      }
+
+      const workStage = document.querySelector('.work-stage');
+      if (workStage) {
+        const canHover = window.matchMedia('(min-width: 901px) and (hover: hover) and (pointer: fine)').matches;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const setSwapped = isSwapped => {
+          workStage.classList.toggle('is-swapped', isSwapped);
+          workStage.setAttribute('aria-pressed', String(isSwapped));
+        };
+
+        if (canHover && !reducedMotion) {
+          workStage.addEventListener('mouseenter', () => setSwapped(true));
+          workStage.addEventListener('mouseleave', () => setSwapped(false));
+        } else {
+          workStage.addEventListener('click', () => setSwapped(!workStage.classList.contains('is-swapped')));
+        }
+        workStage.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          setSwapped(!workStage.classList.contains('is-swapped'));
+        });
       }
 
       const btn = document.querySelector('.copy');
