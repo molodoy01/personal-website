@@ -204,8 +204,12 @@
           <h2>Студия<br>публикаций</h2>
           <p class="deck">Собираю полноценный редактор для публикаций с шаблонами, медиа, планированием и предпросмотром.</p>
           <p>Для небольших каналов и для тех, кому важен фокус на скорости и удобстве.</p>
+          <a class="studio-link" href="https://molodoy01.github.io/XMSGi-Studio/" target="_blank" rel="noopener noreferrer">
+            Открыть Studio
+            <span class="studio-link-arrow" aria-hidden="true"><span class="studio-link-arrow-glyph">↓</span></span>
+          </a>
         </div>
-        <div class="studio-visual" aria-label="Скриншоты XMSGi Studio">
+        <div class="studio-visual" role="button" tabindex="0" aria-label="Поменять местами экраны XMSGi Studio" aria-pressed="false">
           <figure class="studio-shot studio-shot-login">
             <img src="assets/studio/login.webp" alt="XMSGi Studio — экран входа" width="1466" height="638" loading="lazy" decoding="async">
             <figcaption>Вход · Studio</figcaption>
@@ -350,39 +354,90 @@
         observer.observe(aboutSection);
       }
 
-      const studioVisual = document.querySelector('.studio-visual');
-      if (studioVisual) {
-        const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (canHover && !reducedMotion) {
-          studioVisual.addEventListener('mouseenter', () => studioVisual.classList.add('is-swapped'));
-          studioVisual.addEventListener('mouseleave', () => studioVisual.classList.remove('is-swapped'));
-        } else {
-          studioVisual.addEventListener('click', () => studioVisual.classList.toggle('is-swapped'));
-        }
-      }
+      // Общий контроллер «переворотных» сцен (студия и раздел «проект»).
+      // Наведение управляет на десктопе; тап и клавиатура — всегда.
+      // Режим перепроверяется при смене устройства, подключении мыши и настроек движения.
+      const createStageSwap = (stage, hoverMedia) => {
+        if (!stage) return;
+        const hoverQuery = window.matchMedia(hoverMedia);
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const enterEvent = window.PointerEvent ? 'pointerenter' : 'mouseenter';
+        const leaveEvent = window.PointerEvent ? 'pointerleave' : 'mouseleave';
+        let autoMode = null;
+        let lastPointerType = 'mouse';
+        let usedKeyboard = false;
 
-      const workStage = document.querySelector('.work-stage');
-      if (workStage) {
-        const canHover = window.matchMedia('(min-width: 901px) and (hover: hover) and (pointer: fine)').matches;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const setSwapped = isSwapped => {
-          workStage.classList.toggle('is-swapped', isSwapped);
-          workStage.setAttribute('aria-pressed', String(isSwapped));
+        const isOn = () => stage.classList.contains('is-swapped');
+        // is-live включает кроссфейд подписей: анимация стартует не при загрузке
+        // или программной синхронизации, а только при живой смене (тап/наведение/клавиши)
+        const markLiveSwap = on => {
+          if (on === isOn()) return;
+          stage.classList.add('is-live');
+          stage.classList.toggle('is-swapped', on);
+          stage.setAttribute('aria-pressed', String(on));
+        };
+        const setOn = on => {
+          stage.classList.toggle('is-swapped', on);
+          stage.setAttribute('aria-pressed', String(on));
         };
 
-        if (canHover && !reducedMotion) {
-          workStage.addEventListener('mouseenter', () => setSwapped(true));
-          workStage.addEventListener('mouseleave', () => setSwapped(false));
-        } else {
-          workStage.addEventListener('click', () => setSwapped(!workStage.classList.contains('is-swapped')));
-        }
-        workStage.addEventListener('keydown', event => {
+        const onEnter = event => {
+          if (autoMode && event.pointerType !== 'touch') markLiveSwap(true);
+        };
+        const onLeave = event => {
+          if (autoMode && event.pointerType !== 'touch') markLiveSwap(false);
+        };
+
+        const syncMode = () => {
+          const next = hoverQuery.matches && !motionQuery.matches;
+          if (next === autoMode) return;
+          stage.removeEventListener(enterEvent, onEnter);
+          stage.removeEventListener(leaveEvent, onLeave);
+          autoMode = next;
+          if (autoMode) {
+            stage.addEventListener(enterEvent, onEnter);
+            stage.addEventListener(leaveEvent, onLeave);
+            // указатель может уже быть над сценой — подхватываем текущее состояние
+            setOn(stage.matches(':hover'));
+          }
+        };
+
+        syncMode();
+        if (hoverQuery.addEventListener) hoverQuery.addEventListener('change', syncMode);
+        if (motionQuery.addEventListener) motionQuery.addEventListener('change', syncMode);
+
+        stage.addEventListener('pointerdown', event => {
+          lastPointerType = event.pointerType;
+          usedKeyboard = false;
+        }, { passive: true });
+
+        stage.addEventListener('click', () => {
+          if (usedKeyboard) return; // уже переключили в keydown
+          if (autoMode && lastPointerType === 'mouse') return; // в режиме наведения решает курсор
+          markLiveSwap(!isOn());
+        });
+
+        stage.addEventListener('keydown', event => {
           if (event.key !== 'Enter' && event.key !== ' ') return;
           event.preventDefault();
-          setSwapped(!workStage.classList.contains('is-swapped'));
+          usedKeyboard = true;
+          markLiveSwap(!isOn());
         });
-      }
+
+        // страховка: после возврата фокуса окна сверяемся с :hover
+        window.addEventListener('focus', () => {
+          if (autoMode) setOn(stage.matches(':hover'));
+        });
+      };
+
+      createStageSwap(
+        document.querySelector('.studio-visual'),
+        '(hover: hover) and (pointer: fine)'
+      );
+      createStageSwap(
+        document.querySelector('.work-stage'),
+        '(min-width: 901px) and (hover: hover) and (pointer: fine)'
+      );
 
       const btn = document.querySelector('.copy');
       if (!btn) return;

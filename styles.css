@@ -458,25 +458,31 @@ p, blockquote { text-wrap: pretty; }
     width 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 0.6s ease,
-    border-color 0.6s ease,
-    z-index 0s linear 0.3s;
+    border-color 0.6s ease;
+  /* z-index без задержки — см. комментарий у .studio-shot */
+  will-change: left, top, width, transform;
+  backface-visibility: hidden;
 }
+/* тот же приём, что у студии: центр чистым top, transform плоский —
+   подъём фото идёт одним свойством, без рывка в конце */
 .screen-dark,
 .is-swapped .screen-light {
   left: 3%;
   width: 94%;
-  top: 50%;
-  transform: translateY(-50%);
+  transform: translate3d(0, 0, 0);
   z-index: 2;
   border-color: rgba(242, 239, 232, 0.22);
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5);
 }
+/* точный центр: тёмная 1902×1016 → 2.06%, светлая 1722×913 → 2.42% */
+.screen-dark { top: 2.06%; }
+.is-swapped .screen-light { top: 2.42%; }
 .screen-light,
 .is-swapped .screen-dark {
   left: 44%;
   width: 56%;
   top: -1.5rem;
-  transform: none;
+  transform: translate3d(0, 0, 0);
   z-index: 1;
   border-color: rgba(242, 239, 232, 0.16);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
@@ -493,60 +499,63 @@ p, blockquote { text-wrap: pretty; }
 .screen-dark img {
   filter: brightness(1.1) contrast(1.03);
 }
+/* подпись только через top (без auto/bottom) — едет вместе с карточкой без прыжков */
+/* подпись зафиксирована: место меняется мгновенно в середине (top с задержкой),
+   а глаз видит только мягкий кроссфейд — подпись не плывёт через карточку */
 .screen figcaption {
   position: absolute;
   left: 1rem;
-  bottom: 0.85rem;
+  top: calc(100% - 1.87rem);
   z-index: 1;
   font-size: 0.66rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  transition:
+    top 0s linear 0.18s,
+    opacity 0.25s ease,
+    transform 0.35s ease;
 }
 .screen-light figcaption {
   top: 0.85rem;
-  bottom: auto;
-  color: #000000;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  color: #000;
+  text-shadow: 0 1px 6px rgba(255, 255, 255, 0.55);
 }
 .screen-dark figcaption {
   color: #fff;
 }
+/* градиентные подложки: статичная геометрия, переключение только через opacity */
+.screen::before,
 .screen::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
+  top: 0;
   bottom: 0;
-  height: 34%;
-  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
   pointer-events: none;
+  transition: opacity 0.6s ease;
 }
-.screen-light::after {
-  top: 0;
-  bottom: auto;
-  height: 30%;
-  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
+.screen::before {
+  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0) 34%);
+  opacity: 1;
 }
-.is-swapped .screen-light::after {
-  top: auto;
-  bottom: 0;
-  height: 34%;
-  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
+.screen::after {
+  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0) 30%);
+  opacity: 0;
 }
+/* по умолчанию светлый сзади — верхняя подложка и подпись сверху */
+.screen-light::before { opacity: 0; }
+.screen-light::after { opacity: 1; }
+.is-swapped .screen-light::before { opacity: 1; }
+.is-swapped .screen-light::after { opacity: 0; }
 .is-swapped .screen-light figcaption {
-  top: auto;
-  bottom: 0.85rem;
+  top: calc(100% - 1.87rem);
 }
-.is-swapped .screen-dark::after {
-  top: 0;
-  bottom: auto;
-  height: 30%;
-  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
-}
+.is-swapped .screen-dark::before { opacity: 0; }
+.is-swapped .screen-dark::after { opacity: 1; }
 .is-swapped .screen-dark figcaption {
   top: 0.85rem;
-  bottom: auto;
 }
 .work-stage:focus-visible {
   outline: 1px solid var(--accent);
@@ -804,6 +813,42 @@ p, blockquote { text-wrap: pretty; }
   color: var(--text);
   margin-bottom: 1rem;
 }
+/* прямая ссылка на Studio — в стиле product-link из блока XMSGi */
+.studio-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.studio-link:hover { color: var(--text); }
+.studio-link-arrow {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  aspect-ratio: 1;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: transform 0.25s, color 0.2s, background-color 0.2s;
+}
+.studio-link-arrow-glyph {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+.studio-link:hover .studio-link-arrow {
+  transform: translate(3px, -2px);
+  color: var(--bg);
+  background-color: var(--accent);
+}
 .studio-visual {
   position: relative;
   width: 100%;
@@ -812,6 +857,10 @@ p, blockquote { text-wrap: pretty; }
   margin-left: auto;
   margin-right: calc(0px - var(--pad));
   cursor: pointer;
+}
+.studio-visual:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 5px;
 }
 .studio-shot {
   position: absolute;
@@ -826,8 +875,13 @@ p, blockquote { text-wrap: pretty; }
     width 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
     transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 0.6s ease,
-    border-color 0.6s ease,
-    z-index 0s linear 0.3s;
+    border-color 0.6s ease;
+  /* z-index меняется мгновенно и без задержки: в покое карточки не перекрываются,
+     поэтому попа нет ни в начале, ни в конце — только новая карточка сверху в пути */
+  /* Плоская матрица вместо `none` держит композитный слой, браузер не перестраивает
+     его в конце пути — карточка не делает рывок вверх на тач-устройствах. */
+  will-change: left, top, width, transform;
+  backface-visibility: hidden;
 }
 .studio-shot img {
   display: block;
@@ -835,41 +889,64 @@ p, blockquote { text-wrap: pretty; }
   height: auto;
 }
 /* положение «в центре, сверху стопки»: основное фото */
+/* спереди карточка лежит ровно по центру, но без translateY(-50%):
+   проценты в transform считаются от высоты самой карточки, а она меняется
+   вместе с шириной — easing ломался и в конце был рывок вверх.
+   Центр задан чистым top (одно свойство — ровный подъём без скачка). */
 .studio-shot-planner,
 .is-swapped .studio-shot-login {
   left: 3%;
   width: 94%;
-  top: 50%;
-  transform: translateY(-50%);
+  transform: translate3d(0, 0, 0);
   z-index: 2;
   border-color: rgba(242, 239, 232, 0.22);
   box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5);
 }
+/* точный центр под aspect каждого фото: планировщик 1600×838 → 3%,
+   логин 1466×638 → 10.95% (покоящиеся позиции не изменились) */
+.studio-shot-planner { top: 3%; }
+.is-swapped .studio-shot-login { top: 10.95%; }
 /* положение «сзади, смещено вверх-вправо»: второе фото прячется за основным */
 .studio-shot-login,
 .is-swapped .studio-shot-planner {
   left: 44%;
   width: 56%;
   top: -1.5rem;
-  transform: none;
+  transform: translate3d(0, 0, 0);
   z-index: 1;
   border-color: rgba(242, 239, 232, 0.16);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4);
 }
+/* Градиентные подложки: у карточки впереди — затемнение снизу, у карточки сзади — сверху.
+   Геометрия псевдоэлементов статична, состояния переключаются только через opacity —
+   это интерполируется всегда, без прыжков в любом браузере. */
+.studio-shot::before,
 .studio-shot::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
+  top: 0;
   bottom: 0;
-  height: 34%;
-  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
   pointer-events: none;
+  transition: opacity 0.6s ease;
 }
+.studio-shot::before {
+  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0) 34%);
+  opacity: 1;
+}
+.studio-shot::after {
+  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0) 30%);
+  opacity: 0;
+}
+/* подпись позиционируется только через top (без auto/bottom) — значит едет вместе с карточкой */
+/* подпись позиционируется только через top (без auto/bottom);
+   само место переключается невидимым (задержка в transition выше),
+   движение видно лишь как мягкий кроссфейд на месте */
 .studio-shot figcaption {
   position: absolute;
   left: 1rem;
-  bottom: 0.85rem;
+  top: calc(100% - 1.87rem);
   z-index: 1;
   font-size: 0.66rem;
   font-weight: 600;
@@ -877,39 +954,48 @@ p, blockquote { text-wrap: pretty; }
   text-transform: uppercase;
   color: var(--text);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  transition:
+    top 0s linear 0.18s,
+    opacity 0.25s ease,
+    transform 0.35s ease;
 }
 /* по умолчанию логин сзади — его нижний край перекрыт, подпись и градиент сверху */
-.studio-shot-login::after {
-  top: 0;
-  bottom: auto;
-  height: 30%;
-  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
-}
+.studio-shot-login::before { opacity: 0; }
+.studio-shot-login::after { opacity: 1; }
 .studio-shot-login figcaption {
   top: 0.85rem;
-  bottom: auto;
 }
 /* после смены мест роли меняются: логин выходит вперёд, планировщик уходит назад */
-.is-swapped .studio-shot-login::after {
-  top: auto;
-  bottom: 0;
-  height: 34%;
-  background: linear-gradient(to top, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
-}
+.is-swapped .studio-shot-login::before { opacity: 1; }
+.is-swapped .studio-shot-login::after { opacity: 0; }
 .is-swapped .studio-shot-login figcaption {
-  top: auto;
-  bottom: 0.85rem;
+  top: calc(100% - 1.87rem);
 }
-.is-swapped .studio-shot-planner::after {
-  top: 0;
-  bottom: auto;
-  height: 30%;
-  background: linear-gradient(to bottom, rgba(3, 3, 3, 0.28), rgba(3, 3, 3, 0));
-}
+.is-swapped .studio-shot-planner::before { opacity: 0; }
+.is-swapped .studio-shot-planner::after { opacity: 1; }
 .is-swapped .studio-shot-planner figcaption {
   top: 0.85rem;
-  bottom: auto;
 }
+/* Кроссфейд подписей: при смене мест подпись гаснет на месте, позиция
+   переключается невидимой, затем подпись проявляется уже на новом краю.
+   Разные имена для вкл/выкл — анимация перезапускается при каждом тапе/наведении.
+   `is-live` ставит JS при первом живом взаимодействии, чтобы при загрузке не мигало. */
+@keyframes caption-swap-on {
+  0% { opacity: 1; transform: translate3d(0, 0, 0); }
+  30% { opacity: 0; transform: translate3d(0, 6px, 0); }
+  62% { opacity: 0; transform: translate3d(0, 6px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes caption-swap-off {
+  0% { opacity: 1; transform: translate3d(0, 0, 0); }
+  30% { opacity: 0; transform: translate3d(0, 6px, 0); }
+  62% { opacity: 0; transform: translate3d(0, 6px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.studio-visual.is-live.is-swapped .studio-shot figcaption { animation: caption-swap-on 0.6s ease; }
+.studio-visual.is-live:not(.is-swapped) .studio-shot figcaption { animation: caption-swap-off 0.6s ease; }
+.work-stage.is-live.is-swapped .screen figcaption { animation: caption-swap-on 0.6s ease; }
+.work-stage.is-live:not(.is-swapped) .screen figcaption { animation: caption-swap-off 0.6s ease; }
 
 /* ——— ABOUT ——— */
 .about {
@@ -1415,9 +1501,10 @@ p, blockquote { text-wrap: pretty; }
     padding-block: 4.5rem;
   }
   .work { padding-top: 1.5rem; padding-bottom: 4rem; }
-  .studio-shot-planner figcaption { font-size: 0.33rem; }
+  .studio-shot-planner figcaption { font-size: 0.33rem; top: calc(100% - 1.36rem); }
+  .studio-link { margin-top: 1.75rem; }
   .studio-shot-login figcaption { top: 0.55rem; font-size: 0.5rem; }
-  .is-swapped .studio-shot-login figcaption { bottom: 1rem; }
+  .is-swapped .studio-shot-login figcaption { top: calc(100% - 1.78rem); }
   .people-intro { margin-bottom: 3rem; }
   .people-mid { margin-block: 3rem; }
   .gallery { padding-bottom: 2rem; }
@@ -1466,11 +1553,20 @@ p, blockquote { text-wrap: pretty; }
   .topnav a { transition: none; }
   .product-link,
   .product-link-arrow,
+  .studio-link,
+  .studio-link-arrow,
   .cover-go-arrow { transition: none; }
   .product-link:hover .product-link-arrow,
+  .studio-link:hover .studio-link-arrow,
   .cover-go:hover .cover-go-arrow { transform: none; }
-  .studio-shot { transition: none; }
-  .screen { transition: none; }
+  .studio-shot,
+  .studio-shot figcaption,
+  .studio-shot::before,
+  .studio-shot::after { transition: none; animation: none; }
+  .screen,
+  .screen figcaption,
+  .screen::before,
+  .screen::after { transition: none; animation: none; }
   .hello-mail { transition: none; }
   .copy { transition: none; }
 }
